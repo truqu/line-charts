@@ -275,13 +275,21 @@ viewSeries { system, lineConfig } line_ style_ interpolation data_ =
 
 toSeriesAttributes : Series data -> Style -> List (Svg.Attribute msg)
 toSeriesAttributes (Series serie) (Style style_) =
-    [ Attributes.style "pointer-events: none;"
-    , Attributes.class "chart__interpolation__line__fragment"
-    , Attributes.stroke (Color.toCssString (style_.color serie.color))
-    , Attributes.strokeWidth (String.fromFloat style_.width)
-    , Attributes.strokeDasharray (String.join " " (List.map String.fromFloat serie.dashing))
-    , Attributes.fill "transparent"
-    ]
+    let
+        dashing =
+            if List.isEmpty serie.dashing then
+                identity
+
+            else
+                (::) (Attributes.strokeDasharray (String.join " " (List.map String.fromFloat serie.dashing)))
+    in
+    dashing
+        [ Attributes.style "pointer-events: none;"
+        , Attributes.class "chart__interpolation__line__fragment"
+        , Attributes.stroke (Color.toCssString (style_.color serie.color))
+        , Attributes.strokeWidth (String.fromFloat style_.width)
+        , Attributes.fill "transparent"
+        ]
 
 
 
